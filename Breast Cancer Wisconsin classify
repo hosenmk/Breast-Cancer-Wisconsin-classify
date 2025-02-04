@@ -68,3 +68,11 @@ models = {
         Dense(1, activation='sigmoid')
     ])
 }
+
+# Train models, evaluate performance, and store ROC values
+metrics_df = []
+roc_curves = {}
+best_model_name = None
+best_f1_score = 0
+best_model = None
+
