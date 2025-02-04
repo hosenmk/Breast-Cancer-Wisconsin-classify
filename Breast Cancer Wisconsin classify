@@ -146,3 +146,13 @@ plt.show()
 metrics_df = pd.DataFrame(metrics_df, columns=["Model", "Accuracy", "Precision", "Recall", "F1 Score"])
 print("\nModel Comparison Metrics:")
 print(metrics_df)
+
+# Check the best model based on F1 Score
+print(f"\nBest Model: {best_model_name} with F1 Score: {best_f1_score:.4f}")
+
+# Predict on new data (using first test sample)
+new_data = np.array([X_test[0]])  # Example prediction
+prediction = best_model.predict(new_data)
+
+# Print prediction result
+print(f"\nPredicted Diagnosis: {'Malignant' if prediction[0] == 1 else 'Benign'}")
