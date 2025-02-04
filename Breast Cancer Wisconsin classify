@@ -76,3 +76,57 @@ best_model_name = None
 best_f1_score = 0
 best_model = None
 
+# Train and evaluate all models
+for name, model in models.items():
+    if name == "ANN":
+        # For ANN, we compile and train it separately
+        model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+        model.fit(X_train, y_train, epochs=50, batch_size=8, verbose=1, validation_data=(X_test, y_test))
+
+        # Evaluate ANN
+        _, ann_accuracy = model.evaluate(X_test, y_test)
+        y_pred_ann = (model.predict(X_test) > 0.5).astype("int32")
+        ann_report = classification_report(y_test, y_pred_ann, output_dict=True)
+        ann_precision = ann_report["1"]["precision"]
+        ann_recall = ann_report["1"]["recall"]
+        ann_f1 = ann_report["1"]["f1-score"]
+
+        # Store ANN metrics
+        metrics_df.append(["ANN", ann_accuracy, ann_precision, ann_recall, ann_f1])
+
+        # Compute ROC curve for ANN
+        y_probs_ann = model.predict(X_test).ravel()
+        fpr_ann, tpr_ann, _ = roc_curve(y_test, y_probs_ann)
+        roc_curves["ANN"] = (fpr_ann, tpr_ann, auc(fpr_ann, tpr_ann))
+    else:
+        # For other models, we fit and evaluate them normally
+        model.fit(X_train, y_train)
+        y_pred = model.predict(X_test)
+
+        # Compute metrics
+        acc = accuracy_score(y_test, y_pred)
+        report = classification_report(y_test, y_pred, output_dict=True)
+        precision = report["1"]["precision"]
+        recall = report["1"]["recall"]
+        f1 = report["1"]["f1-score"]
+
+        print(f"\n{name} Metrics:")
+        print(f"  Accuracy: {acc:.4f}")
+        print(f"  Precision: {precision:.4f}")
+        print(f"  Recall: {recall:.4f}")
+        print(f"  F1 Score: {f1:.4f}")
+
+        # Store the best model based on F1-score
+        if f1 > best_f1_score:
+            best_f1_score = f1
+            best_model_name = name
+            best_model = model
+
+        # Compute ROC curve
+        y_probs = model.predict_proba(X_test)[:, 1]  # Probability scores
+        fpr, tpr, _ = roc_curve(y_test, y_probs)
+        roc_curves[name] = (fpr, tpr, auc(fpr, tpr))
+
+        # Store metrics
+        metrics_df.append([name, acc, precision, recall, f1])
+
