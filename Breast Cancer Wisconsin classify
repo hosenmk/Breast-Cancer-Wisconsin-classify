@@ -141,3 +141,8 @@ plt.ylabel('True Positive Rate')
 plt.title('ROC Curve for All Models')
 plt.legend(loc='lower right')
 plt.show()
+
+# Display model comparison metrics
+metrics_df = pd.DataFrame(metrics_df, columns=["Model", "Accuracy", "Precision", "Recall", "F1 Score"])
+print("\nModel Comparison Metrics:")
+print(metrics_df)
