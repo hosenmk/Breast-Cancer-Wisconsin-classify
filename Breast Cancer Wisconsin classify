@@ -130,3 +130,14 @@ for name, model in models.items():
         # Store metrics
         metrics_df.append([name, acc, precision, recall, f1])
 
+# Compute ROC curve for all models
+plt.figure(figsize=(10, 7))
+for model_name, (fpr, tpr, roc_auc) in roc_curves.items():
+    plt.plot(fpr, tpr, label=f'{model_name} (AUC = {roc_auc:.4f})')
+
+plt.plot([0, 1], [0, 1], color='gray', linestyle='--')
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('ROC Curve for All Models')
+plt.legend(loc='lower right')
+plt.show()
